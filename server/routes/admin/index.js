@@ -10,7 +10,7 @@ module.exports = app => {
         res.send({
             status: true,
             message: '创建成功',
-            model:model
+            model: model
         })
     })
     router.put('/:id', async (req, res) => {
@@ -19,16 +19,20 @@ module.exports = app => {
         res.send({
             status: true,
             message: '修改成功',
-            model:model
+            model: model
         })
     })
     router.get('/', async (req, res) => {
         console.log('查询帖子')
-        const data = await req.Model.find().populate('parent')
+        let queryOptions = {}
+        if (req.Model.modelName === 'Category') {
+            queryOptions.populate = 'parent'
+        }
+        const data = await req.Model.find().setOptions(queryOptions)
         res.send({
             status: true,
             message: '查询成功',
-            data:data
+            data: data
         })
     })
     router.get('/:id', async (req, res) => {
@@ -37,7 +41,7 @@ module.exports = app => {
         res.send({
             status: true,
             message: '通过id查询成功',
-            data:data
+            data: data
         })
     })
     router.delete('/:id', async (req, res) => {
@@ -48,9 +52,16 @@ module.exports = app => {
             message: '删除成功'
         })
     })
-    app.use('/admin/api/rest/:resource', async (req, res, next)=>{
+    app.use('/admin/api/rest/:resource', async (req, res, next) => {
         const modelName = require('inflection').classify(req.params.resource)
         req.Model = require(`../../models/${modelName}`)
         next()
     }, router)
+    const multer = require('multer')
+    const upload = multer({ dest: __dirname + '/../../uploads' })
+    app.post('/admin/api/upload', upload.single('file'), async (req, res,) => {
+        const file = req.file
+        file.url = `http://localhost:4000/uploads/${file.filename}`
+        res.send(file)
+    })
 }
