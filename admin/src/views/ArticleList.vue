@@ -1,20 +1,15 @@
 <template>
   <div class="create">
-      <h1>英雄列表</h1>
+      <h1>文章列表</h1>
         <el-table :data="tableData">
           <el-table-column prop="_id" label="ID" width="280"></el-table-column>
-          <el-table-column prop="name" label="英雄名称"></el-table-column>
-          <el-table-column label="英雄头像">
-              <template slot-scope="scope">
-                  <img :src="scope.row.avatar" alt="" style="height: 5rem;width:5rem">
-              </template>
-          </el-table-column>
-          <el-table-column prop="title" label="英雄称号"></el-table-column>
+          <el-table-column prop="title" label="标题"></el-table-column>
+          <el-table-column prop="description" label="内容"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
                 size="mini"
-                @click="$router.push(`/heroes/edit/${scope.row._id}`)">编辑</el-button>
+                @click="$router.push(`/articles/edit/${scope.row._id}`)">编辑</el-button>
               <el-button
                 size="mini"
                 type="danger"
@@ -37,17 +32,17 @@ export default {
   },
   methods: {
     async fetchData () {
-      const res = await this.$http.get('rest/heroes')
+      const res = await this.$http.get('rest/articles')
       console.log(res.data, ';;')
       this.tableData = res.data.data
     },
     handleDelete (index, row) {
-      this.$confirm(`此操作将永久删除英雄"${row.name}"?`, '提示', {
+      this.$confirm(`此操作将永久删除分类"${row.name}"?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await this.$http.delete(`rest/heroes/${row._id}`)
+        await this.$http.delete(`rest/articles/${row._id}`)
         this.$message({
           type: 'success',
           message: '删除成功!'
