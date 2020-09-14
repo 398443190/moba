@@ -24,7 +24,7 @@ export default {
     return {
       model: {
         username: '',
-        parpasswordent: ''
+        parpassword: ''
       }
     }
   },
