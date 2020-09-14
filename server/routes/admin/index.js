@@ -1,8 +1,18 @@
 module.exports = app => {
     const express = require('express')
+    const jwt = require('jsonwebtoken')
+    const AdminUser = require('../../models/AdminUser')
+    const assert = require('http-assert')
+
     const router = express.Router({
         mergeParams: true
     })
+
+
+    // 登陆校验中间件
+    const authMiddleware = require('../../middleware/auth')
+    // 资源中间件
+    const resourceMiddleware = require('../../middleware/resource')
 
     router.post('/', async (req, res) => {
         console.log('创建分类')
@@ -22,19 +32,19 @@ module.exports = app => {
             model: model
         })
     })
-    router.get('/', async (req, res) => {
-        console.log('查询帖子')
-        let queryOptions = {}
-        if (req.Model.modelName === 'Category') {
-            queryOptions.populate = 'parent'
-        }
-        const data = await req.Model.find().setOptions(queryOptions)
-        res.send({
-            status: true,
-            message: '查询成功',
-            data: data
+    router.get('/',
+        async (req, res) => {
+            let queryOptions = {}
+            if (req.Model.modelName === 'Category') {
+                queryOptions.populate = 'parent'
+            }
+            const data = await req.Model.find().setOptions(queryOptions)
+            res.send({
+                status: true,
+                message: '查询成功',
+                data: data
+            })
         })
-    })
     router.get('/:id', async (req, res) => {
         console.log('通过id查询帖子')
         const data = await req.Model.findById(req.params.id)
@@ -52,16 +62,28 @@ module.exports = app => {
             message: '删除成功'
         })
     })
-    app.use('/admin/api/rest/:resource', async (req, res, next) => {
-        const modelName = require('inflection').classify(req.params.resource)
-        req.Model = require(`../../models/${modelName}`)
-        next()
-    }, router)
+    app.use('/admin/api/rest/:resource', authMiddleware(), resourceMiddleware(), router)
+
     const multer = require('multer')
     const upload = multer({ dest: __dirname + '/../../uploads' })
-    app.post('/admin/api/upload', upload.single('file'), async (req, res,) => {
+    app.post('/admin/api/upload',authMiddleware(), upload.single('file'), async (req, res,) => {
         const file = req.file
         file.url = `http://localhost:4000/uploads/${file.filename}`
         res.send(file)
+    })
+    app.use('/admin/api/login', async (req, res, next) => {
+        const { username, password } = req.body
+        const user = await AdminUser.findOne({ username }).select('+password')
+        assert(user, 422, '用户不存在')
+
+        const isValid = require('bcrypt').compareSync(password, user.password)
+        assert(isValid, 422, '密码错误')
+        const token = jwt.sign({ id: user._id }, app.get('privite_key'))
+        res.send({ token })
+    })
+    app.use(async (err, req, res, next) => {
+        res.status(err.statusCode || 500).send({
+            message: err.message
+        })
     })
 }

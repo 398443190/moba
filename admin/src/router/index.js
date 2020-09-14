@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Login from '../views/Login.vue'
 import Main from '../views/Main.vue'
 import CategoryCreate from '../views/CategoryCreate'
 import CategoryList from '../views/CategoryList'
@@ -11,9 +11,21 @@ import HeroList from '../views/HeroList'
 import ArticleCreate from '../views/ArticleCreate'
 import ArticleList from '../views/ArticleList'
 
+import AdCreate from '../views/AdCreate'
+import AdList from '../views/AdList'
+
+import AdminUserCreate from '../views/AdminUserCreate'
+import AdminUserList from '../views/AdminUserList'
+
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+    meta: { isPublic: true }
+  },
   {
     path: '/',
     name: 'Main',
@@ -33,7 +45,15 @@ const routes = [
 
       { path: '/articles/create', component: ArticleCreate },
       { path: '/articles/edit/:id', component: ArticleCreate, props: true },
-      { path: '/articles/list', component: ArticleList }
+      { path: '/articles/list', component: ArticleList },
+
+      { path: '/ads/create', component: AdCreate },
+      { path: '/ads/edit/:id', component: AdCreate, props: true },
+      { path: '/ads/list', component: AdList },
+
+      { path: '/admin_users/create', component: AdminUserCreate },
+      { path: '/admin_users/edit/:id', component: AdminUserCreate, props: true },
+      { path: '/admin_users/list', component: AdminUserList }
     ]
   },
   {
@@ -49,5 +69,11 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-
+router.beforeEach((to, form, next) => {
+  console.log(to, 'to')
+  if (!to.meta.isPublic && !localStorage.token) {
+    return next('/login')
+  }
+  next()
+})
 export default router
