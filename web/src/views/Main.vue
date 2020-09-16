@@ -9,7 +9,7 @@
       <button type="button" class="bg-primary">立即下载</button>
     </div>
     <div class="bg-primary pt-3 pb-2">
-      <div class="nav d-flex jc-around text-white pd-1">
+      <div class="nav nav-inverse pb-1 jc-around">
         <div class="nav-item active">
           <router-link tag="div" class="nav-link" to="/">首页</router-link>
         </div>
@@ -24,3 +24,12 @@
     <router-view />
   </div>
 </template>
+
+<style lang="scss">
+.topbar {
+  top: 0;
+  position: sticky;
+  z-index: 999;
+
+}
+</style>
