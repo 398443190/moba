@@ -66,7 +66,7 @@ module.exports = app => {
 
     const multer = require('multer')
     const upload = multer({ dest: __dirname + '/../../uploads' })
-    app.post('/admin/api/upload',authMiddleware(), upload.single('file'), async (req, res,) => {
+    app.post('/admin/api/upload', authMiddleware(), upload.single('file'), async (req, res,) => {
         const file = req.file
         file.url = `http://localhost:4000/uploads/${file.filename}`
         res.send(file)
@@ -87,3 +87,6 @@ module.exports = app => {
         })
     })
 }
+// $$('.hero-nav > li').map((li, i)=>{ return { name: li.innerText, heroes:$$('li', $$('.hero-list')[i]).map(el =>{
+//     return {name: $$('h3', el)[0].innerHTML,avatar: $$('img', el)[0].src}
+// })} })

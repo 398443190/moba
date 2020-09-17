@@ -8,6 +8,7 @@ import 'swiper/dist/css/swiper.css'
 import Card from './components/Card'
 import ListCard from './components/ListCard'
 import axios from 'axios'
+import './assets/iconfont/iconfont.css'
 
 Vue.config.productionTip = false
 Vue.component('m-card', Card)

@@ -43,6 +43,7 @@
         </router-link>
       </template>
     </m-list-card>
+    <m-list-card icon="menu1" title="英雄列表" :categories="[]"></m-list-card>
   </div>
 </template>
 
