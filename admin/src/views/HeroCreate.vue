@@ -13,12 +13,26 @@
               :action="uploadUrl"
               :show-file-list="false"
               :headers="getAuthHeader()"
-              :on-success="handleAvatarSuccess"
+              :on-success="res => $set(model, 'avatar', res.url)"
             >
               <img v-if="model.avatar" :src="model.avatar" class="avatar" />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
+
+          <el-form-item label="banner">
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :headers="getAuthHeader()"
+              :on-success="res => $set(model, 'banner', res.url)"
+            >
+              <img v-if="model.banner" :src="model.banner" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+
           <el-form-item label="称号">
             <el-input v-model="model.title"></el-input>
           </el-form-item>
@@ -105,12 +119,45 @@
               <el-form-item label="小提示">
                 <el-input type="textarea" v-model="item.tips"></el-input>
               </el-form-item>
+
+              <el-form-item label="冷却值">
+                <el-input v-model="item.delay"></el-input>
+              </el-form-item>
+
+              <el-form-item label="消耗">
+                <el-input v-model="item.cost"></el-input>
+              </el-form-item>
+
               <el-form-item>
                 <el-button type="danger" @click="model.skills.splice(index, 1)">删除</el-button>
               </el-form-item>
             </el-col>
           </el-row>
         </el-tab-pane>
+
+        <el-tab-pane label="英雄关系" name="partner">
+          <el-button @click="model.partners.push({})">
+            <i class="el-icon-plus"></i>添加英雄
+          </el-button>
+          <el-row type="flex" style="flex-wrap: wrap">
+            <el-col :md="12" v-for="(item, index) in model.partners" :key="index">
+              <el-form-item label="名称">
+                <el-select v-model="item.hero" filterable>
+                  <el-option v-for="(item, index) in partnerdata" :key="index" :label="item.name" :value="item._id"></el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="item.description"></el-input>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button type="danger" @click="model.partners.splice(index, 1)">删除</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+
       </el-tabs>
       <!-- <el-form-item label="英雄关系">
         <el-rate v-model="model.partners" :max="9" show-score style="margin-top: 10px"></el-rate>
@@ -143,19 +190,27 @@ export default {
           survice: 0
         },
         skills: [],
+        partners: [],
         itemssucc: [],
         itemdefeat: []
       },
       categories: [],
-      items: []
+      items: [],
+      partnerdata: []
     }
   },
   mounted () {
     this.id && this.fetch()
     this.fetchCategories()
     this.fetchItems()
+    this.fetchPartnerData()
   },
   methods: {
+    async fetchPartnerData () {
+      const res = await this.$http.get('rest/heroes')
+      this.partnerdata = res.data.data
+      console.log(this.partnerdata, 'this.partnerdata')
+    },
     async fetchItems () {
       const res = await this.$http.get('rest/items')
       this.items = res.data.data
@@ -163,9 +218,6 @@ export default {
     async fetchCategories () {
       const res = await this.$http.get('rest/categories')
       this.categories = res.data.data.filter(item => { return item.parent })
-    },
-    handleAvatarSuccess (res, file) {
-      this.model.avatar = res.url
     },
     async save () {
       let res

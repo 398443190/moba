@@ -43,7 +43,16 @@
         </router-link>
       </template>
     </m-list-card>
-    <m-list-card icon="menu1" title="英雄列表" :categories="[]"></m-list-card>
+    <m-list-card icon="menu1" title="英雄列表" :categories="heroesList">
+      <template #items="{category}">
+        <div class=" d-flex flex-wrap" style="margin: 0 -0.5rem">
+         <router-link tag="div" :to="`/heroes/${hero._id}`" class='p-2 text-center' v-for="(hero, i) in category.heroList" :key="i" style="width: 20%">
+            <img :src="hero.avatar" class="w-100" alt="" />
+            <div class="text-info">{{hero.name}}</div>
+          </router-link>
+        </div>
+      </template>
+    </m-list-card>
   </div>
 </template>
 
@@ -58,17 +67,24 @@ export default {
           el: '.swiper-pagination'
         }
       },
-      newsCats: []
+      newsCats: [],
+      heroesList: []
     }
   },
   created () {
     this.getData()
+    this.getHeroList()
   },
   methods: {
     async getData () {
       const res = await this.$http.get('news/list')
       console.log(res, 'res')
       this.newsCats = res.data
+    },
+    async getHeroList () {
+      const res = await this.$http.get('heroes/list')
+      console.log(res, 'res')
+      this.heroesList = res.data
     }
   }
 }
