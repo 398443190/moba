@@ -13,7 +13,7 @@ import './assets/iconfont/iconfont.css'
 Vue.config.productionTip = false
 Vue.component('m-card', Card)
 Vue.component('m-list-card', ListCard)
-Vue.prototype.$http = axios.create({ baseURL: 'http://localhost:4000/web/api' })
+Vue.prototype.$http = axios.create({ baseURL: process.env.VUE_APP_API_URL || '/web/api' })
 Vue.use(VueAwesomeSwiper)
 new Vue({
   router,
