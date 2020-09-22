@@ -1,12 +1,11 @@
-const { populate } = require('../models/Article.js')
 
 module.exports = app => {
     const router = require('express').Router()
     const mongoose = require('mongoose')
     // const Category = mongoose.model('Category')
-    const Article = require('../models/Article.js')
-    const Category = require('../models/Category.js')
-    const Hero = require('../models/Hero.js')
+    const Article = require('../../models/Article.js')
+    const Category = require('../../models/Category.js')
+    const Hero = require('../../models/Hero.js')
     router.get('/news/init', async (req, res) => {
         const parent = await Category.findOne({
             name: '新闻分类'
