@@ -23,6 +23,15 @@ module.exports = app => {
             model: model
         })
     })
+    app.use('/user/reg', async (req, res) => {
+        console.log(req.body, 'req.body')
+        const model = await AdminUser.create(req.body)
+        res.send({
+            status: true,
+            message: 'zhucechenggong',
+            model
+        })
+    })
     router.put('/:id', async (req, res) => {
         console.log('修改分类')
         const model = await req.Model.findByIdAndUpdate(req.params.id, req.body)
